@@ -1,5 +1,30 @@
-# DimLED Mini
+<p align="center">
+  <a href="https://github.com/tqlabs-in/dimled-mini">
+    <picture>
+      <source srcset="assets/logo-dimled-mini-dark.svg" media="(prefers-color-scheme: dark)">
+      <source srcset="assets/logo-dimled-mini-light.svg" media="(prefers-color-scheme: light)">
+      <img src="assets/logo-dimled-mini-light.svg" alt="DimLED Mini logo">
+    </picture>
+  </a>
+</p>
 
-A simple led dimmer based on ESP-01 Module powered by esphome firmware.
+<p align="center"><q style="font-style: italic; font-weight: bold;"> Open Source PWM LED Dimmer powered by ESPHome </q></p>
+<p align="center">
+  <a href=""><img alt="" src="https://img.shields.io/github/downloads/tqlabs-in/dimled-mini/total?label=Downloads&style=flat"></img></a>
+  <a href="https://github.com/tqlabs-in/dimled-mini/actions/workflows/ci.yml"><img alt="CI status" src="https://img.shields.io/github/actions/workflow/status/tqlabs-in/dimled-mini/ci.yml?style=flat-square&branch=main&label=CI" /></a>
+</p>
 
-Checkout [iBOM](https://htmlpreview.github.io/?https://raw.githubusercontent.com/tqlabs-in/dimled-mini/main/pcb/bom/ibom.html) for more details.
+### PCB Renders
+
+<!-- ![PCB Render](assets/pcb-render.png) -->
+
+<p align="center">
+  <img src="assets/pcb-render-assembled.png" width="350" title="PCB Render">
+  <img src="assets/pcb-render-top.png" width="350" alt="PCB Top Layer">
+  <img src="assets/pcb-render-bottom.png" width="350" alt="PCB Bottom Layer">
+</p>
+
+### Useful Links
+
+- [Web Flasher](https://tqlabs-in.github.io/dimled-mini/)
+- [BOM](https://htmlpreview.github.io/?https://raw.githubusercontent.com/tqlabs-in/dimled-mini/main/pcb/bom/ibom.html)
