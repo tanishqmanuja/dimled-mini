@@ -1,0 +1,95 @@
+name: Release Firmware
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: Bump type
+        required: true
+        type: choice
+        options: [patch, minor, major]
+        default: patch
+
+permissions:
+  contents: write
+
+jobs:
+  version:
+    name: Determine Version
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+      tag: ${{ steps.version.outputs.tag }}
+      prev_tag: ${{ steps.version.outputs.prev_tag }}
+      summary: ${{ steps.summary.outputs.text }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - id: version
+        run: |
+          LAST_TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "v0.0.0")
+          NEW=$(bunx semver "${LAST_TAG#v}" --increment "${{ inputs.bump }}")
+
+          echo "version=$NEW" >> $GITHUB_OUTPUT
+          echo "tag=v$NEW" >> $GITHUB_OUTPUT
+          echo "prev_tag=$LAST_TAG" >> $GITHUB_OUTPUT
+
+      - id: summary
+        run: |
+          PREV="${{ steps.version.outputs.prev_tag }}"
+          CURR="${{ steps.version.outputs.tag }}"
+
+          if [ -z "$PREV" ]; then
+            URL="https://github.com/${{ github.repository }}/commits/$CURR"
+          else
+            URL="https://github.com/${{ github.repository }}/compare/$PREV...$CURR"
+          fi
+
+          echo "summary<<EOF" >> $GITHUB_OUTPUT
+          echo "[View changes on GitHub]($URL)" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+  build-firmware:
+    name: Build Firmware
+    uses: esphome/workflows/.github/workflows/build.yml@2025.10.0
+    with:
+      files: |
+        esphome/dimled-mini.factory.yaml
+      esphome-version: latest
+      release-url: https://github.com/${{ github.repository }}/releases/tag/${{ needs.version.outputs.tag }}
+      release-summary: ${{ needs.version.outputs.summary }}
+      release-version: ${{ needs.version.outputs.version }}
+
+  create-release:
+    name: Create GitHub Release
+    needs: build-firmware
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Generate release notes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          bunx changelogithub \
+            --name "DimLED Mini v${{ needs.version.outputs.version }}"
+
+  upload-to-release:
+    name: Upload to Release
+    uses: esphome/workflows/.github/workflows/upload-to-gh-release.yml@2025.10.0
+    needs:
+      - build-firmware
+    with:
+      version: ${{ needs.version.outputs.tag }}
