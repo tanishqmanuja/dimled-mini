@@ -12,12 +12,13 @@
 
 ---
 substitutions:
+  device_name: dimled-mini
+  friendly_name: DimLED Mini
+  wifi_ap_password: tqlabs.in
+
+defaults:
   __string_true: "true"
   __string_false: "false"
-
-  device_name: "dimled-mini"
-  friendly_name: "DimLED Mini"
-  wifi_ap_password: tqlabs.in
 
 packages:
   # Common Packages
